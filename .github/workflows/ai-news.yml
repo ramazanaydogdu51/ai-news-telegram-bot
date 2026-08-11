@@ -21,7 +21,6 @@ jobs:
 
       - name: Fetch and send AI news
         env:
-          NEWSAPI_KEY: ${{ secrets.NEWSAPI_KEY }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
         run: python ai_news.py
