@@ -1,0 +1,37 @@
+name: Bot Listener
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  listen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Poll Telegram and respond
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          NEWSAPI_KEY: ${{ secrets.NEWSAPI_KEY }}
+        run: python listener.py
+
+      - name: Commit offset if changed
+        run: |
+          git config user.name "ai-news-bot"
+          git config user.email "actions@github.com"
+          git add offset.json
+          git diff --cached --quiet || git commit -m "update offset [skip ci]"
+          git push
